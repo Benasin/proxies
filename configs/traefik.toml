@@ -1,0 +1,14 @@
+defaultEntryPoints = ["http"]
+
+[entryPoints.http]
+  address = ":80"
+
+[backends]
+  [backends.backend1]
+    [backends.backend1.servers.server1]
+       url = "http://raw:9999"
+
+[frontends]
+  [frontends.frontend2]
+      backend = "backend1"
+      

@@ -1,0 +1,79 @@
+version: '3'
+services:
+  haproxy:
+    image: haproxy:latest
+    ports:
+      - "8001:80"
+      # - "8081:5555"
+    volumes:
+      - ./configs/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    networks:
+      - proxy
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8002:80"
+    volumes:
+      - ./configs/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - proxy
+
+  nuster:
+    image: nuster/nuster:latest
+    ports:
+      - "8003:80"
+    volumes:
+      - ./configs/nuster.cfg:/etc/nuster/nuster.cfg
+    networks:
+      - proxy
+
+  # caddy:
+  #   image: caddy:2.4.0
+  #   ports:
+  #     - "8004:8443"
+  #     - "8084:2019"
+  #   volumes:
+  #     - ./configs/Caddyfile:/etc/caddy/Caddyfile
+  #   networks:
+  #     - proxy
+
+  traefik:
+    image: traefik:latest
+    command: --configFile=/etc/traefik/traefik.yml
+    ports:
+      - "8004:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./configs/traefik.toml:/etc/traefik/traefik.toml
+    networks:
+      - proxy
+
+  # envoy:
+  #   image: envoyproxy/envoy:v1.18.3
+  #   ports:
+  #     - "8007:443"
+  #     - "8700:9090"
+  #   volumes:
+  #     - ./configs/envoy.yaml:/etc/envoy/envoy.yaml
+  #   networks:
+  #     - proxy
+
+  apachephp:
+    image: php:apache
+    ports:
+      - "9990:80"
+    volumes:
+      - ./code/:/var/www/html/
+    networks:
+      - proxy
+
+  raw:
+    build: raw/.
+    ports:
+      - "9999:9999"
+    networks:
+      - proxy
+      
+networks: 
+  proxy:
